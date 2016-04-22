@@ -113,10 +113,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\DANFS.DataAccess\DANFS.DataAccess.csproj">
-      <Project>{1FBE0925-AE12-4D30-A93E-7432C73D3134}</Project>
-      <Name>DANFS.DataAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DANFS.Services\DANFS.Services.csproj">
       <Project>{82139F90-B4B9-4665-8FFE-E93F29BF003A}</Project>
       <Name>DANFS.Services</Name>
@@ -125,8 +121,14 @@
       <Project>{059BDB65-C63B-47D0-84F6-9784EEDE0760}</Project>
       <Name>TinyIoC</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DANFS.Shared\DANFS.Shared.csproj">
+      <Project>{CC71C398-A638-4477-97A1-95C490A43A6A}</Project>
+      <Name>DANFS.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="shiplocations.sqlite" />
+    <BundleResource Include="..\DANFS.Shared\shiplocations.sqlite">
+      <Link>shiplocations.sqlite</Link>
+    </BundleResource>
   </ItemGroup>
 </Project>

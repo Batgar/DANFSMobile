@@ -29,7 +29,7 @@ namespace DANFS.iOS
 			this.TableView.ReloadData();
 		}
 
-		IList<IShipToken> Ships {get; set;}
+		IList<ShipToken> Ships {get; set;}
 
 
 		public override nint RowsInSection (UITableView tableView, nint section)

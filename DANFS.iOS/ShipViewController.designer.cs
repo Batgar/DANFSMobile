@@ -13,6 +13,9 @@ namespace DANFS.iOS
 	partial class ShipViewController
 	{
 		[Outlet]
+		MapKit.MKMapView locationMapView { get; set; }
+
+		[Outlet]
 		UIKit.UITextView mainTextView { get; set; }
 		
 		void ReleaseDesignerOutlets ()
@@ -20,6 +23,11 @@ namespace DANFS.iOS
 			if (mainTextView != null) {
 				mainTextView.Dispose ();
 				mainTextView = null;
+			}
+
+			if (locationMapView != null) {
+				locationMapView.Dispose ();
+				locationMapView = null;
 			}
 		}
 	}

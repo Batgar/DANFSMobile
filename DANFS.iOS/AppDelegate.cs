@@ -2,6 +2,7 @@
 using UIKit;
 using DANFS.Services;
 using SQLite.Net.Interop;
+using DANFS.Shared;
 
 namespace DANFS.iOS
 {
@@ -21,9 +22,9 @@ namespace DANFS.iOS
 		{
 			// Override point for customization after application launch.
 			// If not required for your application you can safely delete this method
-			TinyIoC.TinyIoCContainer.Current.Register<IFolderProvider>(this);
-			TinyIoC.TinyIoCContainer.Current.Register<ISQLitePlatform>(new SQLite.Net.Platform.XamarinIOS.SQLitePlatformIOS());
-			TinyIoC.TinyIoCContainer.Current.Register<IDataAccess>(new DataAccess.DataAccess());
+
+			Bootstrapper.Startup (new SQLite.Net.Platform.XamarinIOS.SQLitePlatformIOS (),
+				this);
 
 
 			return true;

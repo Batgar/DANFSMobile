@@ -7,6 +7,7 @@ using UIKit;
 using DANFS.Services;
 using System.Linq;
 using SQLite.Net.Interop;
+using MapKit;
 
 namespace DANFS.iOS
 {
@@ -33,20 +34,37 @@ namespace DANFS.iOS
 			var locations = await dataAccess.GetLocationsForShip (this.Ship);
 			mainTextView.Text = string.Join ("\n", locations);
 
-			var geoLocations = await dataAccess.GetRawGeolocationsForShip (this.Ship);
+			var shipLocations = await dataAccess.GetRawGeolocationsForShip (this.Ship);
 
-			foreach (var geoLocation in geoLocations) {
-				foreach (var result in geoLocation.Results) {
+			foreach (var location in shipLocations) {
+				if (location.LocationGeocodeResult != null) {
+					//Only plot the first result.
+					var result = location.LocationGeocodeResult.Results.FirstOrDefault();
+					if (result == null) {
+						continue;
+					}
 					var geometry = result.Geometry;
-					foreach (var bound in geometry.Viewport.Values) {
-						var lat = bound.Lat;
-						var longitude = bound.Long;
+					if (geometry != null && geometry.Viewport != null) {
+						var val = geometry.Viewport.Values.FirstOrDefault ();
+
+						if (val == null) {
+							continue;
+						}
+
+						var lat = val.Lat;
+						var longitude = val.Long;
+
+						var annotation = new MKPointAnnotation ();
+						annotation.SetCoordinate (new CoreLocation.CLLocationCoordinate2D (lat, longitude));
+						annotation.Title = location.Location + "-" + location.PossibleStartDate.GetValueOrDefault () + "-" + location.PossibleEndDate.GetValueOrDefault ();
+						this.locationMapView.AddAnnotation (annotation);
+						
 					}
 				}
 			}
 		}
 
-		public IShipToken Ship {get; set;}
+		public ShipToken Ship {get; set;}
 
 
 	}

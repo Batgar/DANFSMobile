@@ -20,10 +20,22 @@ namespace DANFS.Android
 		{
 			base.OnCreate (savedInstanceState);
 
-			AppBootstrapper.Initialize ();
+			AppBootstrapper.Initialize (this.BaseContext);
 
 			//Start loading the master ship list for the ListActivity.
 			ListAdapter = new ShipListAdapter(this);
+		}
+
+		protected override void OnListItemClick (ListView l, View v, int position, long id)
+		{
+			base.OnListItemClick (l, v, position, id);
+
+			var shipToken = (ListAdapter as ShipListAdapter).Ships [position];
+
+			//Startup the ShipLocationActivity....
+			var intent = new Intent(this, typeof(ShipLocationActivity));
+			intent.PutExtra ("ShipToken", shipToken.Serialize());
+			StartActivity(intent);
 		}
 	}
 }

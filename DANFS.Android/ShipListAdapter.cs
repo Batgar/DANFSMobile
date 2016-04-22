@@ -7,7 +7,7 @@ using Android.Views;
 
 namespace DANFS.Android
 {
-	public class ShipListAdapter : BaseAdapter<IShipToken>
+	public class ShipListAdapter : BaseAdapter<ShipToken>
 	{
 		public ShipListAdapter (Activity context) : base() 
 		{
@@ -25,16 +25,16 @@ namespace DANFS.Android
 			this.NotifyDataSetChanged ();
 		}
 
-		IList<IShipToken> Ships { get; set; }
+		public IList<ShipToken> Ships { get; set; }
 
 		Activity Context {get; set;}
 
-		public override IShipToken this[int index] {
+		public override ShipToken this[int index] {
 			get {
 				if (Ships != null) {
 					return Ships [index];
 				}
-				return null;
+				return ShipToken.Empty;
 			}
 		}
 

@@ -7,11 +7,11 @@ namespace DANFS.Services
 {
 	public interface IDataAccess
 	{
-		Task<IList<IShipToken>> GetAllShips();
+		Task<IList<ShipToken>> GetAllShips();
 
-		Task<IList<string>> GetLocationsForShip(IShipToken ship);
+		Task<IList<string>> GetLocationsForShip(ShipToken ship);
 
-		Task<List<GeocodeResultMain>> GetRawGeolocationsForShip (IShipToken ship);
+		Task<List<ShipLocationHistoryResult>> GetRawGeolocationsForShip (ShipToken ship);
 	}
 
 	public class GeocodeResultMain

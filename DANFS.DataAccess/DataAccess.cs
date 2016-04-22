@@ -19,7 +19,8 @@ namespace DANFS.DataAccess
 
 		#region IDataAccess implementation
 
-		public async Task<System.Collections.Generic.IList<IShipToken>> GetAllShips() {
+
+		public async Task<System.Collections.Generic.IList<ShipToken>> GetAllShips() {
 			var client = new HttpClient ();
 			var stream = await client.GetStreamAsync ("http://s3-us-west-2.amazonaws.com/danfs/manifest.json");
 
@@ -30,30 +31,58 @@ namespace DANFS.DataAccess
 			{
 				var allShipsResponse = serializer.Deserialize<List<ShipToken>>(jsonTextReader);
 
-				return allShipsResponse.Cast<IShipToken> ().ToList();
+				return allShipsResponse.Cast<ShipToken> ().ToList();
 			}
 		}
 
-		public async Task<List<GeocodeResultMain>> GetRawGeolocationsForShip(IShipToken ship)
+
+
+		public async Task<List<ShipLocationHistoryResult>> GetRawGeolocationsForShip(ShipToken ship)
 		{
 			var connection = new SQLite.Net.SQLiteConnection (
 				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
 				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MapDatabasePath);
+			
 
-			var locations = await GetLocationsForShip (ship);
+			List<ShipLocationHistoryResult> mainShipLocationResults = new List<ShipLocationHistoryResult> ();
 
-			List<GeocodeResultMain> mainGeocodeResults = new List<GeocodeResultMain> ();
+			var query = connection.Table<shipLocationDate> ().Where (r => r.shipID == ship.ID).OrderBy (r => r.startdate);
 
-			foreach (var location in locations) {
+			foreach (var shipLocation in query) {
+				var possibleLocation = connection.Table<locationJSON> ().Where (l => l.name == shipLocation.locationname).FirstOrDefault();
+
+				DateTime startDate;
+				DateTime endDate;
+
+				var hasStartDate = string.IsNullOrEmpty(shipLocation.startdate) ? false : DateTime.TryParse (shipLocation.startdate, out startDate);
+				var hasEndDate = string.IsNullOrEmpty(shipLocation.enddate) ? false : DateTime.TryParse (shipLocation.enddate, out endDate);
+
+				mainShipLocationResults.Add (new ShipLocationHistoryResult () { 
+					Location = shipLocation.locationname,
+					PossibleEndDate = hasStartDate ? startDate : default(DateTime),
+					PossibleStartDate = hasEndDate ? endDate : default(DateTime),
+					ShipToken = ship,
+					LocationGeocodeResult = possibleLocation != null ? JsonConvert.DeserializeObject<GeocodeResultMain> (possibleLocation.geocodeJSON) : null
+				});
+
+			/*foreach (var location in locations) {
 				List<GeocodeResultMain> results = new List<GeocodeResultMain> ();
 				var query = connection.Table<locationJSON> ().Where (l => l.name == location);
 				foreach (var locationJSONEntry in query) {
 					mainGeocodeResults.Add(JsonConvert.DeserializeObject<GeocodeResultMain>(locationJSONEntry.geocodeJSON));
-				}
+				}*/
 			}
 
-			return mainGeocodeResults;
+			return mainShipLocationResults;
 		}
+
+				public class shipLocationDate
+				{
+					public string shipID {get; set;}
+					public string locationname {get; set;}
+					public string startdate {get; set;}
+					public string enddate {get; set;}
+				}
 
 		public class locationJSON
 		{
@@ -62,7 +91,10 @@ namespace DANFS.DataAccess
 		}
 
 
-		public async Task<IList<string>> GetLocationsForShip(IShipToken ship) {
+
+
+
+		public async Task<IList<string>> GetLocationsForShip(ShipToken ship) {
 			//Take the ID out of ship, load the XML, use XDocument to return all the internal strings of the LOCATION XML elements.
 			var client = new HttpClient ();
 			var stream = await client.GetStreamAsync (string.Format("http://s3-us-west-2.amazonaws.com/danfs/{0}.xml", ship.ID));

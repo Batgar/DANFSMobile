@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Fn7-8I-rJX">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--Root View Controller-->
@@ -50,21 +50,29 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="THh-vn-tUJ">
-                                <rect key="frame" x="0.0" y="64" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="64" width="600" height="150"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="G9O-x2-mp0">
+                                <rect key="frame" x="185" y="426" width="240" height="128"/>
+                            </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="THh-vn-tUJ" firstAttribute="width" secondItem="lC8-0o-P8z" secondAttribute="width" id="3ym-sP-QTU"/>
-                            <constraint firstItem="THh-vn-tUJ" firstAttribute="height" secondItem="lC8-0o-P8z" secondAttribute="height" id="LNc-Ee-6HG"/>
+                            <constraint firstItem="G9O-x2-mp0" firstAttribute="leading" secondItem="lC8-0o-P8z" secondAttribute="leading" id="Adf-lB-P0y"/>
+                            <constraint firstItem="THh-vn-tUJ" firstAttribute="height" secondItem="lC8-0o-P8z" secondAttribute="height" multiplier="0.25" id="LNc-Ee-6HG"/>
                             <constraint firstItem="THh-vn-tUJ" firstAttribute="leading" secondItem="lC8-0o-P8z" secondAttribute="leading" id="NkX-pn-XR0"/>
                             <constraint firstItem="THh-vn-tUJ" firstAttribute="top" secondItem="bbK-QE-wYb" secondAttribute="bottom" id="cJD-Dj-Fuq"/>
+                            <constraint firstItem="G9O-x2-mp0" firstAttribute="width" secondItem="lC8-0o-P8z" secondAttribute="width" id="dNs-QT-McG"/>
+                            <constraint firstItem="G9O-x2-mp0" firstAttribute="height" secondItem="lC8-0o-P8z" secondAttribute="height" multiplier="0.75" id="iGR-Zk-N0W"/>
+                            <constraint firstItem="G9O-x2-mp0" firstAttribute="top" secondItem="THh-vn-tUJ" secondAttribute="bottom" id="ric-cm-CLs"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="locationMapView" destination="G9O-x2-mp0" id="LMB-P2-dVZ"/>
                         <outlet property="mainTextView" destination="THh-vn-tUJ" id="mV5-gq-Bpx"/>
                     </connections>
                 </viewController>
