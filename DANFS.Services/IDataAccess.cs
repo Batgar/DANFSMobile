@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -13,7 +14,12 @@ namespace DANFS.Services
 
 		Task<List<ShipLocationHistoryResult>> GetRawGeolocationsForShip (ShipToken ship);
 
-		System.Collections.Generic.IList<shipdate> GetTodayInNavyHistory();
+		IEnumerable<string> GetTodayInNavyHistoryYearSections();
+
+		IEnumerable<shipdate> GetTodayInNavyHistoryByYear(string year);
+
+		IList<shipdate> GetTodayInNavyHistory();
+
 	}
 
 	public class GeocodeResultMain

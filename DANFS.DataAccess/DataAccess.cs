@@ -36,7 +36,24 @@ namespace DANFS.DataAccess
 			}
 		}
 
-		public System.Collections.Generic.IList<shipdate> GetTodayInNavyHistory()
+		public IEnumerable<shipdate> GetTodayInNavyHistoryByYear(string year)
+		{
+			var today = DateTime.Now;
+
+			var day = Convert.ToString(today.Day);
+
+			var month = today.ToString("MMMM", new CultureInfo("en-US"));
+
+			var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().DateDatabasePath);
+
+			var query = connection.Table<shipdate>().Where(r => r.day == day && r.month == month && r.year == year);
+
+			return query;
+		}
+
+		public IEnumerable<string> GetTodayInNavyHistoryYearSections()
 		{
 			var today = DateTime.Now;
 
@@ -48,7 +65,24 @@ namespace DANFS.DataAccess
 				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
 				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().DateDatabasePath);
 
-			var query = connection.Table<shipdate>().Where(r => r.day == day && r.month == month).OrderBy(r => r.name);
+			var query = connection.Table<shipdate>().Where(r => r.day == day && r.month == month).OrderBy(r => r.year);
+
+			return query.Select(r => r.year).Distinct();
+		}
+
+		public IList<shipdate> GetTodayInNavyHistory()
+		{
+			var today = DateTime.Now;
+
+			var day = Convert.ToString(today.Day);
+
+			var month = today.ToString("MMMM", new CultureInfo("en-US"));
+
+			var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().DateDatabasePath);
+
+			var query = connection.Table<shipdate>().Where(r => r.day == day && r.month == month).OrderBy(r => r.year);
 
 			return query.ToList();
 		}
