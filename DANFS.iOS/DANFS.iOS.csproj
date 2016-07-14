@@ -130,5 +130,6 @@
     <BundleResource Include="..\DANFS.Shared\shiplocations.sqlite">
       <Link>shiplocations.sqlite</Link>
     </BundleResource>
+    <BundleResource Include="shipdates.sqlite" />
   </ItemGroup>
 </Project>

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using SQLite.Net.Interop;
+using System.Globalization;
 
 namespace DANFS.DataAccess
 {
@@ -35,6 +36,23 @@ namespace DANFS.DataAccess
 			}
 		}
 
+		public System.Collections.Generic.IList<shipdate> GetTodayInNavyHistory()
+		{
+			var today = DateTime.Now;
+
+			var day = Convert.ToString(today.Day);
+
+			var month = today.ToString("MMMM", new CultureInfo("en-US"));
+			
+			var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().DateDatabasePath);
+
+			var query = connection.Table<shipdate>().Where(r => r.day == day && r.month == month).OrderBy(r => r.name);
+
+			return query.ToList();
+		}
+
 
 
 		public async Task<List<ShipLocationHistoryResult>> GetRawGeolocationsForShip(ShipToken ship)
@@ -48,8 +66,10 @@ namespace DANFS.DataAccess
 
 			var query = connection.Table<shipLocationDate> ().Where (r => r.shipID == ship.ID).OrderBy (r => r.startdate);
 
+			int locationIndex = 1;
+
 			foreach (var shipLocation in query) {
-				var possibleLocation = connection.Table<locationJSON> ().Where (l => l.name == shipLocation.locationname).FirstOrDefault();
+				var possibleLocation = connection.Table<locationJSON> ().First (l => l.name == shipLocation.locationname);
 
 				DateTime startDate;
 				DateTime endDate;
@@ -57,11 +77,13 @@ namespace DANFS.DataAccess
 				var hasStartDate = string.IsNullOrEmpty(shipLocation.startdate) ? false : DateTime.TryParse (shipLocation.startdate, out startDate);
 				var hasEndDate = string.IsNullOrEmpty(shipLocation.enddate) ? false : DateTime.TryParse (shipLocation.enddate, out endDate);
 
-				mainShipLocationResults.Add (new ShipLocationHistoryResult () { 
+				mainShipLocationResults.Add(new ShipLocationHistoryResult()
+				{
 					Location = shipLocation.locationname,
 					PossibleEndDate = hasStartDate ? startDate : default(DateTime),
 					PossibleStartDate = hasEndDate ? endDate : default(DateTime),
 					ShipToken = ship,
+					LocationIndex = locationIndex++,
 					LocationGeocodeResult = possibleLocation != null ? JsonConvert.DeserializeObject<GeocodeResultMain> (possibleLocation.geocodeJSON) : null
 				});
 

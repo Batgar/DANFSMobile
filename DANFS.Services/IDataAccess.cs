@@ -12,6 +12,8 @@ namespace DANFS.Services
 		Task<IList<string>> GetLocationsForShip(ShipToken ship);
 
 		Task<List<ShipLocationHistoryResult>> GetRawGeolocationsForShip (ShipToken ship);
+
+		System.Collections.Generic.IList<shipdate> GetTodayInNavyHistory();
 	}
 
 	public class GeocodeResultMain

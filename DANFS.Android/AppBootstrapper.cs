@@ -78,6 +78,14 @@ namespace DANFS.Android
 			}
 		}
 
+		public string DateDatabasePath
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		#endregion
 
 		private static AppBootstrapper Instance()

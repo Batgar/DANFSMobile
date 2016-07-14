@@ -8,22 +8,25 @@ using DANFS.Services;
 using System.Linq;
 using SQLite.Net.Interop;
 using MapKit;
+using CoreGraphics;
 
 namespace DANFS.iOS
 {
-	public partial class ShipViewController : UIViewController
+	public partial class ShipViewController : UIViewController, IMKMapViewDelegate
 	{
-		public ShipViewController (IntPtr handle) : base (handle)
+		public ShipViewController(IntPtr handle) : base(handle)
 		{
 		}
 
-		public override void ViewDidLoad ()
+		public override void ViewDidLoad()
 		{
-			base.ViewDidLoad ();
+			base.ViewDidLoad();
+
+			locationMapView.Delegate = this;
 
 			//this.mainTextView.Text = Ship.Title;
 
-			RefreshWithLocations ();
+			RefreshWithLocations();
 
 		}
 
@@ -31,41 +34,97 @@ namespace DANFS.iOS
 		{
 			//Load all the locations for this ship.
 			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess>();
-			var locations = await dataAccess.GetLocationsForShip (this.Ship);
-			mainTextView.Text = string.Join ("\n", locations);
+			var locations = await dataAccess.GetLocationsForShip(this.Ship);
+			mainTextView.Text = string.Join("\n", locations);
 
-			var shipLocations = await dataAccess.GetRawGeolocationsForShip (this.Ship);
+			var shipLocations = await dataAccess.GetRawGeolocationsForShip(this.Ship);
 
-			foreach (var location in shipLocations) {
-				if (location.LocationGeocodeResult != null) {
+			foreach (var location in shipLocations)
+			{
+				if (location.LocationGeocodeResult != null)
+				{
 					//Only plot the first result.
 					var result = location.LocationGeocodeResult.Results.FirstOrDefault();
-					if (result == null) {
+					if (result == null)
+					{
 						continue;
 					}
 					var geometry = result.Geometry;
-					if (geometry != null && geometry.Viewport != null) {
-						var val = geometry.Viewport.Values.FirstOrDefault ();
+					if (geometry != null && geometry.Viewport != null)
+					{
+						var val = geometry.Viewport.Values.FirstOrDefault();
 
-						if (val == null) {
+						if (val == null)
+						{
 							continue;
 						}
 
 						var lat = val.Lat;
 						var longitude = val.Long;
 
-						var annotation = new MKPointAnnotation ();
-						annotation.SetCoordinate (new CoreLocation.CLLocationCoordinate2D (lat, longitude));
-						annotation.Title = location.Location + "-" + location.PossibleStartDate.GetValueOrDefault () + "-" + location.PossibleEndDate.GetValueOrDefault ();
-						this.locationMapView.AddAnnotation (annotation);
-						
+						var annotation = new LocationAnnotation();
+						annotation.SetCoordinate(new CoreLocation.CLLocationCoordinate2D(lat, longitude));
+						annotation.Title = location.Location + "-" + location.PossibleStartDate.GetValueOrDefault() + "-" + location.PossibleEndDate.GetValueOrDefault();
+						annotation.LocationIndex = location.LocationIndex;
+						this.locationMapView.AddAnnotation(annotation);
+
 					}
 				}
 			}
 		}
 
-		public ShipToken Ship {get; set;}
+		[Export("mapView:viewForAnnotation:")]
+		public MKAnnotationView GetViewForAnnotation(MKMapView mapView, IMKAnnotation annotation)
+		{
+			if (annotation is LocationAnnotation)
+			{
+				// Try to dequeue an existing pin view first.
+				var pinView = (MKAnnotationView)mapView.DequeueReusableAnnotation("CustomPinAnnotationView");
+				if (pinView == null)
+				{
+					// If an existing pin view was not available, create one.
+					pinView = new MKAnnotationView(annotation, @"CustomPinAnnotationView");
+				}
+
+				//pinView.animatesDrop = YES;
+				pinView.CanShowCallout = true;
+				//pinView.Image = new UIImage(@"pizza_slice_32.png");
+				pinView.CalloutOffset = new CGPoint(0, 32);
+
+				UILabel label;
+				if (pinView.Subviews.Count() == 0)
+				{
+					label = new UILabel();
+					pinView.AddSubview(label);
+				}
+				else
+				{
+					label = pinView.Subviews[0] as UILabel;
+				}
+
+				label.Text = Convert.ToString((annotation as LocationAnnotation).LocationIndex);
+				label.SizeToFit();
 
 
+				return pinView;
+			}
+			else if (annotation is MKPointAnnotation)
+			{
+				return new MKPinAnnotationView(annotation, null);
+			}
+			else 
+			{
+				return null;
+			}
+		}
+
+		public ShipToken Ship { get; set; }
+
+
+	}
+
+	class LocationAnnotation : MKPointAnnotation
+	{
+		public int LocationIndex { get; set; }
 	}
 }

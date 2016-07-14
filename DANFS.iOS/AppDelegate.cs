@@ -3,6 +3,7 @@ using UIKit;
 using DANFS.Services;
 using SQLite.Net.Interop;
 using DANFS.Shared;
+using System;
 
 namespace DANFS.iOS
 {
@@ -34,6 +35,14 @@ namespace DANFS.iOS
 			get
 			{ 
 				return NSBundle.MainBundle.PathForResource ("shiplocations", "sqlite");
+			}
+		}
+
+		public string DateDatabasePath
+		{
+			get
+			{
+				return NSBundle.MainBundle.PathForResource("shipdates", "sqlite");
 			}
 		}
 
