@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="31H-lf-ZO1">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
@@ -55,6 +56,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="Qsd-e2-Fv8" kind="show" identifier="ShowTimelineDocumentSegue" id="8c2-df-XqZ"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -67,6 +71,39 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d0u-if-PSi" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="488" y="-505"/>
+        </scene>
+        <!--Ship Document View Controller-->
+        <scene sceneID="dfs-FM-eEp">
+            <objects>
+                <viewController id="Qsd-e2-Fv8" customClass="ShipDocumentViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="2bd-5K-7Tt"/>
+                        <viewControllerLayoutGuide type="bottom" id="gAR-Vn-yFx"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="DL2-8E-iz4">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DWa-13-Gbm">
+                                <rect key="frame" x="154" y="236" width="240" height="128"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="DWa-13-Gbm" secondAttribute="trailing" id="2vg-ay-9qE"/>
+                            <constraint firstItem="gAR-Vn-yFx" firstAttribute="top" secondItem="DWa-13-Gbm" secondAttribute="bottom" id="UTd-cO-VgA"/>
+                            <constraint firstItem="DWa-13-Gbm" firstAttribute="leading" secondItem="DL2-8E-iz4" secondAttribute="leadingMargin" id="aOA-KA-whS"/>
+                            <constraint firstItem="DWa-13-Gbm" firstAttribute="top" secondItem="2bd-5K-7Tt" secondAttribute="bottom" id="uj0-n1-VuW"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="shipDocumentWebView" destination="DWa-13-Gbm" id="NED-3y-bGw"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Yyo-2V-yCV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1147" y="-509"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="aa8-b9-2Xg">

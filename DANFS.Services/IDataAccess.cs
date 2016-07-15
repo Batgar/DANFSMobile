@@ -20,6 +20,8 @@ namespace DANFS.Services
 
 		IList<shipdate> GetTodayInNavyHistory();
 
+		Task<string> GetDisplayableHTMLForShip(string shipID);
+
 	}
 
 	public class GeocodeResultMain

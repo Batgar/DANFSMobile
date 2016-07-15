@@ -20,6 +20,19 @@ namespace DANFS.DataAccess
 
 		#region IDataAccess implementation
 
+		public async Task<string> GetDisplayableHTMLForShip(string shipID)
+		{
+			//First load the xml from Amazon S3 (for now, probably SQLite later).
+			var client = new HttpClient();
+			var stream = await client.GetStreamAsync($"http://s3-us-west-2.amazonaws.com/danfs/{shipID}.xml");
+
+			//Load the XSLT transform we will use to translate to HTML.
+			var doc = XDocument.Load(stream);
+
+			//Transform
+			//Return the HTML string.
+			return ShipXMLTransformer.GetHTML(doc);
+		}
 
 		public async Task<System.Collections.Generic.IList<ShipToken>> GetAllShips() {
 			var client = new HttpClient ();

@@ -68,6 +68,25 @@ namespace DANFS.iOS
 			cell.DetailTextLabel.Text = shipEvent.name + " " + shipEvent.year;
 			return cell;
 		}
+
+		/*public override void RowSelected(UITableView tableView, Foundation.NSIndexPath indexPath)
+		{
+			var shipEvent = All[indexPath.Row];
+			int i = 0;
+		}*/
+
+		public override void PrepareForSegue(UIStoryboardSegue segue, Foundation.NSObject sender)
+		{
+			base.PrepareForSegue(segue, sender);
+
+			if (segue.Identifier == "ShowTimelineDocumentSegue")
+			{
+				var shipEvent = All[this.TableView.IndexPathForSelectedRow.Row];
+				var destination = segue.DestinationViewController as ShipDocumentViewController;
+				destination.ShipEvent = shipEvent;
+			}
+
+		}
 	}
 }
 
