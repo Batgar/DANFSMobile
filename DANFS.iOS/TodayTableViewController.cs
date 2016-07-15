@@ -3,6 +3,7 @@ using DANFS.Services;
 using UIKit;
 using System.Collections.Generic;
 using System.Linq;
+using Foundation;
 
 namespace DANFS.iOS
 {
@@ -56,17 +57,37 @@ namespace DANFS.iOS
 			var cell = this.TableView.DequeueReusableCell("TodayCell");
 			var shipEvent = All[indexPath.Row];
 
+			cell.TextLabel.Font = UIFont.FromName("Courier New", 14);
 			cell.TextLabel.Lines = 2;
 			cell.TextLabel.AdjustsFontSizeToFitWidth = true;
 			cell.TextLabel.AdjustsLetterSpacingToFitWidth = true;
-			cell.TextLabel.MinimumFontSize = 4;
+			cell.TextLabel.MinimumFontSize = 8;
 
 				//DataAccess.GetTodayInNavyHistoryByYear(Sections.ElementAt((int)indexPath.Section)).ElementAt(indexPath.Row);
 			cell.TextLabel.Text = shipEvent.preview;
 			//cell.TextLabel.SizeToFit();
 
-			cell.DetailTextLabel.Text = shipEvent.name + " " + shipEvent.year;
+			cell.DetailTextLabel.AttributedText = GetShipEventDetailText(shipEvent);
 			return cell;
+		}
+
+		private NSAttributedString GetShipEventDetailText(shipdate shipEvent)
+		{
+			NSMutableAttributedString detailString = new NSMutableAttributedString();
+
+			detailString.Append(new NSAttributedString(shipEvent.year, new UIStringAttributes
+			{
+				Font = UIFont.BoldSystemFontOfSize(12)
+			}));
+
+			detailString.Append(new NSAttributedString("\t\t\t"));
+
+			detailString.Append(new NSAttributedString(shipEvent.name, new UIStringAttributes
+			{
+				Font = UIFont.ItalicSystemFontOfSize(12)
+			}));
+
+			return detailString;
 		}
 
 		/*public override void RowSelected(UITableView tableView, Foundation.NSIndexPath indexPath)

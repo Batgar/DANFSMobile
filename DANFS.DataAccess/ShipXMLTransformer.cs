@@ -22,7 +22,7 @@ namespace DANFS.DataAccess
 				//Just insert a date marker.
 				sb.Append("<span id=\"date-");
 				sb.Append(element.Attribute("date_guid").Value);
-				sb.Append("\"></span>");
+				sb.Append("\" style=\"color:navy\">");
 			}
 
 			if (element.Name == "p")
@@ -66,6 +66,11 @@ namespace DANFS.DataAccess
 			if (element.Name == "i")
 			{
 				sb.Append("</i>");
+			}
+
+			if (element.Name == "date")
+			{
+				sb.Append("</span>");
 			}
 		}
 	}

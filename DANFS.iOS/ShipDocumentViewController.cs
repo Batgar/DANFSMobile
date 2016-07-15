@@ -35,6 +35,7 @@ namespace DANFS.iOS
 		public void LoadingFinished(UIWebView webView)
 		{
 			shipDocumentWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').scrollIntoView()");
+			shipDocumentWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').style.backgroundColor = \"#00FF00\"");
 		}
 	}
 }
