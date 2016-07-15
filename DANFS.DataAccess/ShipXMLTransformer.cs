@@ -20,9 +20,9 @@ namespace DANFS.DataAccess
 			if (element.Name == "date")
 			{
 				//Just insert a date marker.
-				sb.Append("<a href=\"#date-");
+				sb.Append("<span id=\"date-");
 				sb.Append(element.Attribute("date_guid").Value);
-				sb.Append("\"></a>");
+				sb.Append("\"></span>");
 			}
 
 			if (element.Name == "p")
