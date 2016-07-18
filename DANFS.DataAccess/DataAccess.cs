@@ -23,7 +23,7 @@ namespace DANFS.DataAccess
 		public async Task<string> GetDisplayableHTMLForShip(string shipID)
 		{
 			//First load the xml from Amazon S3 (for now, probably SQLite later).
-			var client = new HttpClient();
+			/*var client = new HttpClient();
 			var stream = await client.GetStreamAsync($"http://s3-us-west-2.amazonaws.com/danfs/{shipID}.xml");
 
 			//Load the XSLT transform we will use to translate to HTML.
@@ -31,11 +31,19 @@ namespace DANFS.DataAccess
 
 			//Transform
 			//Return the HTML string.
-			return ShipXMLTransformer.GetHTML(doc);
+			return ShipXMLTransformer.GetHTML(doc);*/
+			var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MasterDatabasePath);
+
+			var query = connection.Table<danfs_ships>().Where(r => r.id == shipID).FirstOrDefault();
+
+			return ShipXMLTransformer.GetHTML(XDocument.Parse(query.history));
+
 		}
 
 		public async Task<System.Collections.Generic.IList<ShipToken>> GetAllShips() {
-			var client = new HttpClient ();
+			/*var client = new HttpClient ();
 			var stream = await client.GetStreamAsync ("http://s3-us-west-2.amazonaws.com/danfs/manifest.json");
 
 			var serializer = new JsonSerializer();
@@ -46,7 +54,15 @@ namespace DANFS.DataAccess
 				var allShipsResponse = serializer.Deserialize<List<ShipToken>>(jsonTextReader);
 
 				return allShipsResponse.Cast<ShipToken> ().ToList();
-			}
+			}*/
+
+			var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MasterDatabasePath);
+
+			var query = connection.Table<danfs_ships>().Select(r => new ShipToken() { ID = r.id, Title = r.title});
+
+			return query.ToList();
 		}
 
 		public IEnumerable<shipdate> GetTodayInNavyHistoryByYear(string year)
@@ -116,7 +132,13 @@ namespace DANFS.DataAccess
 			int locationIndex = 1;
 
 			foreach (var shipLocation in query) {
-				var possibleLocation = connection.Table<locationJSON> ().First (l => l.name == shipLocation.locationname);
+				var possibleLocation = connection.Table<locationJSON> ().FirstOrDefault (l => l.name == shipLocation.locationname);
+
+				if (possibleLocation == null)
+				{
+					//We purposely skip some locations when processing. May want to re-think that!
+					continue;
+				}
 
 				DateTime startDate;
 				DateTime endDate;
@@ -131,7 +153,8 @@ namespace DANFS.DataAccess
 					PossibleStartDate = hasEndDate ? endDate : default(DateTime),
 					ShipToken = ship,
 					LocationIndex = locationIndex++,
-					LocationGeocodeResult = possibleLocation != null ? JsonConvert.DeserializeObject<GeocodeResultMain> (possibleLocation.geocodeJSON) : null
+					LocationGeocodeResult = possibleLocation != null ? JsonConvert.DeserializeObject<GeocodeResultMain> (possibleLocation.geocodeJSON) : null,
+					LocationGuid = shipLocation.locationguid
 				});
 
 			/*foreach (var location in locations) {
@@ -151,6 +174,7 @@ namespace DANFS.DataAccess
 					public string locationname {get; set;}
 					public string startdate {get; set;}
 					public string enddate {get; set;}
+					public string locationguid { get; set;}
 				}
 
 		public class locationJSON
@@ -159,16 +183,24 @@ namespace DANFS.DataAccess
 			public string geocodeJSON { get; set; }
 		}
 
-
-
-
-
 		public async Task<IList<string>> GetLocationsForShip(ShipToken ship) {
 			//Take the ID out of ship, load the XML, use XDocument to return all the internal strings of the LOCATION XML elements.
-			var client = new HttpClient ();
+			/*var client = new HttpClient ();
 			var stream = await client.GetStreamAsync (string.Format("http://s3-us-west-2.amazonaws.com/danfs/{0}.xml", ship.ID));
 			var document = XDocument.Load (stream);
-			return document.Descendants ("LOCATION").Select (e => e.Value).ToList ();
+			return document.Descendants ("LOCATION").Select (e => e.Value).ToList ();*/
+
+			//Get these from the SQLite database now, instead of processing the XML.
+			using (var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MapDatabasePath))
+			{
+				var table = connection.Table<shipLocationDate>();
+
+				var query = table.Where(r => r.shipID == ship.ID)/*.OrderBy(r => r.startdate)*/;
+
+				return query.Select(r => r.locationname).ToList();
+			}
 		}
 
 		#endregion

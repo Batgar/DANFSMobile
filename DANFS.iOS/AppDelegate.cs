@@ -46,6 +46,14 @@ namespace DANFS.iOS
 			}
 		}
 
+		public string MasterDatabasePath
+		{
+			get
+			{
+				return NSBundle.MainBundle.PathForResource("danfs-augmented", "sqlite3");
+			}
+		}
+
 		public override void OnResignActivation (UIApplication application)
 		{
 			// Invoked when the application is about to move from active to inactive state.

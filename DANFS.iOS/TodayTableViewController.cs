@@ -82,7 +82,7 @@ namespace DANFS.iOS
 
 			detailString.Append(new NSAttributedString("\t\t\t"));
 
-			detailString.Append(new NSAttributedString(shipEvent.name, new UIStringAttributes
+			detailString.Append(new NSAttributedString(shipEvent.title, new UIStringAttributes
 			{
 				Font = UIFont.ItalicSystemFontOfSize(12)
 			}));

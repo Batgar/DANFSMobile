@@ -66,6 +66,7 @@ namespace DANFS.iOS
 						annotation.SetCoordinate(new CoreLocation.CLLocationCoordinate2D(lat, longitude));
 						annotation.Title = location.Location + "-" + location.PossibleStartDate.GetValueOrDefault() + "-" + location.PossibleEndDate.GetValueOrDefault();
 						annotation.LocationIndex = location.LocationIndex;
+						annotation.LocationGuid = location.LocationGuid;
 						this.locationMapView.AddAnnotation(annotation);
 
 					}
@@ -118,13 +119,39 @@ namespace DANFS.iOS
 			}
 		}
 
+		private LocationAnnotation _lastSelectedLocationAnnotation;
+
+		[Export("mapView:didSelectAnnotationView:")]
+		public void DidSelectAnnotationView(MKMapView mapView, MKAnnotationView view)
+		{
+			if (view.Annotation is LocationAnnotation)
+			{
+				_lastSelectedLocationAnnotation = view.Annotation as LocationAnnotation;
+				//TODO: Navigate to the ShipDocumentViewController and highlight the location within it.
+				this.PerformSegue("ShowLocationDocumentSegue", this);
+			}
+		}
+
 		public ShipToken Ship { get; set; }
 
+
+		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
+		{
+			base.PrepareForSegue(segue, sender);
+
+			if (segue.Identifier == "ShowLocationDocumentSegue")
+			{
+				var shipDocumentViewController = segue.DestinationViewController as ShipDocumentViewController;
+				shipDocumentViewController.ShipId = this.Ship.ID;
+				shipDocumentViewController.LocationGuidToHighlight = _lastSelectedLocationAnnotation.LocationGuid;
+			}
+		}
 
 	}
 
 	class LocationAnnotation : MKPointAnnotation
 	{
 		public int LocationIndex { get; set; }
+		public string LocationGuid { get; set;}
 	}
 }

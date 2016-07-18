@@ -141,5 +141,6 @@
       <Link>shiplocations.sqlite</Link>
     </BundleResource>
     <BundleResource Include="shipdates.sqlite" />
+    <BundleResource Include="danfs-augmented.sqlite3" />
   </ItemGroup>
 </Project>

@@ -9,8 +9,24 @@ namespace DANFS.iOS
 	{
 		public shipdate ShipEvent { get; internal set; }
 
+		public string LocationGuidToHighlight { get; internal set; }
+
+		public string ShipId { get; set;}
+
 		public ShipDocumentViewController(IntPtr handle) : base(handle)
 		{
+		}
+
+		private UIWebView ActiveWebView
+		{
+			get
+			{
+				if (this.shipDocumentWebView != null)
+				{
+					return this.shipDocumentWebView;
+				}
+				return this.shipDocumentWebView2;
+			}
 		}
 
 		public async override void ViewDidLoad()
@@ -20,9 +36,11 @@ namespace DANFS.iOS
 
 			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess>();
 
-			var htmlString = await dataAccess.GetDisplayableHTMLForShip(ShipEvent.name);
+			var shipIDToShow = ShipEvent != null ? ShipEvent.id : ShipId;
 
-			shipDocumentWebView.LoadHtmlString(htmlString, null);
+			var htmlString = await dataAccess.GetDisplayableHTMLForShip(shipIDToShow);
+
+			ActiveWebView.LoadHtmlString(htmlString, null);
 		}
 
 		public override void DidReceiveMemoryWarning()
@@ -34,8 +52,16 @@ namespace DANFS.iOS
 		[Export("webViewDidFinishLoad:")]
 		public void LoadingFinished(UIWebView webView)
 		{
-			shipDocumentWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').scrollIntoView()");
-			shipDocumentWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').style.backgroundColor = \"#00FF00\"");
+			if (ShipEvent != null)
+			{
+				ActiveWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').scrollIntoView()");
+				ActiveWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').style.backgroundColor = \"#00FF00\"");
+			}
+			if (LocationGuidToHighlight != null)
+			{
+				ActiveWebView.EvaluateJavascript($"document.getElementById('location-{LocationGuidToHighlight}').scrollIntoView()");
+				ActiveWebView.EvaluateJavascript($"document.getElementById('location-{LocationGuidToHighlight}').style.backgroundColor = \"#00FF00\"");
+			}
 		}
 	}
 }

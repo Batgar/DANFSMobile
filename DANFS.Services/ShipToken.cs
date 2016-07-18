@@ -10,13 +10,13 @@ namespace DANFS.Services
 		[JsonProperty(PropertyName="id")]
 		public string ID {
 			get ;
-			internal set;
+			set;
 		}
 
 		[JsonProperty(PropertyName="title")]
 		public string Title {
 			get ;
-			internal set;
+			set;
 		}
 
 		public string Serialize()

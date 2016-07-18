@@ -34,6 +34,7 @@
     <Compile Include="DataAccess.cs" />
     <Compile Include="GoogleGeocoder.cs" />
     <Compile Include="ShipXMLTransformer.cs" />
+    <Compile Include="danfs_ships.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

@@ -40,6 +40,13 @@ namespace DANFS.DataAccess
 				sb.Append("<html><body>");
 			}
 
+			if (element.Name == "LOCATION")
+			{
+				sb.Append("<span id=\"location-");
+				sb.Append(element.Attribute("location_guid").Value);
+				sb.Append("\" >");
+			}
+
 			foreach (var childNode in element.Nodes())
 			{
 				if (childNode is XText)
@@ -68,7 +75,7 @@ namespace DANFS.DataAccess
 				sb.Append("</i>");
 			}
 
-			if (element.Name == "date")
+			if (element.Name == "date" || element.Name == "LOCATION")
 			{
 				sb.Append("</span>");
 			}

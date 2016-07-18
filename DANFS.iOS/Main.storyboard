@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="31H-lf-ZO1">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -196,11 +195,48 @@
                     <connections>
                         <outlet property="locationMapView" destination="G9O-x2-mp0" id="LMB-P2-dVZ"/>
                         <outlet property="mainTextView" destination="THh-vn-tUJ" id="mV5-gq-Bpx"/>
+                        <segue destination="1h5-1e-oaE" kind="show" identifier="ShowLocationDocumentSegue" id="cJ7-d7-VKm"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HJ4-gg-jpm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1687" y="590"/>
+        </scene>
+        <!--Ship Document View Controller-->
+        <scene sceneID="P2w-Na-Koz">
+            <objects>
+                <viewController id="1h5-1e-oaE" customClass="ShipDocumentViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="zlm-UF-eXj"/>
+                        <viewControllerLayoutGuide type="bottom" id="lLf-cC-vDM"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="AS5-AY-bOr">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a6N-dv-Rx8">
+                                <rect key="frame" x="67" y="99" width="240" height="128"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                                <connections>
+                                    <outlet property="delegate" destination="1h5-1e-oaE" id="rtH-ZB-MkL"/>
+                                </connections>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="a6N-dv-Rx8" firstAttribute="top" secondItem="zlm-UF-eXj" secondAttribute="bottom" id="4CS-QI-nRr"/>
+                            <constraint firstItem="a6N-dv-Rx8" firstAttribute="leading" secondItem="AS5-AY-bOr" secondAttribute="leadingMargin" id="pvg-LR-m7U"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="a6N-dv-Rx8" secondAttribute="trailing" id="ury-Mj-vIu"/>
+                            <constraint firstItem="lLf-cC-vDM" firstAttribute="top" secondItem="a6N-dv-Rx8" secondAttribute="bottom" id="wgt-GG-ysh"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="shipDocumentWebView2" destination="a6N-dv-Rx8" id="e5W-I5-B41"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mtw-Pj-gZI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2519" y="595"/>
         </scene>
         <!--Ships-->
         <scene sceneID="yPB-6f-IVg">

@@ -11,6 +11,7 @@ namespace DANFS.Services
 		public GeocodeResultMain LocationGeocodeResult {get; set;}
 		public string Location {get; set;}
 		public int LocationIndex { get; set; }
+		public string LocationGuid { get; set; }
 	}
 }
 

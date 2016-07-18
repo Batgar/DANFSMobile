@@ -14,12 +14,20 @@ namespace DANFS.iOS
 	{
 		[Outlet]
 		UIKit.UIWebView shipDocumentWebView { get; set; }
+
+		[Outlet]
+		UIKit.UIWebView shipDocumentWebView2 { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
 			if (shipDocumentWebView != null) {
 				shipDocumentWebView.Dispose ();
 				shipDocumentWebView = null;
+			}
+
+			if (shipDocumentWebView2 != null) {
+				shipDocumentWebView2.Dispose ();
+				shipDocumentWebView2 = null;
 			}
 		}
 	}
