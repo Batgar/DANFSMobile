@@ -22,6 +22,10 @@ namespace DANFS.Services
 
 		Task<string> GetDisplayableHTMLForShip(string shipID);
 
+		List<string> GetUniqueLocationList();
+
+		List<shipLocationDate> GetShipListByLocation(string locationName);
+
 	}
 
 	public class GeocodeResultMain

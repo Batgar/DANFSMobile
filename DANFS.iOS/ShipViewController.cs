@@ -67,6 +67,8 @@ namespace DANFS.iOS
 						annotation.Title = location.Location + "-" + location.PossibleStartDate.GetValueOrDefault() + "-" + location.PossibleEndDate.GetValueOrDefault();
 						annotation.LocationIndex = location.LocationIndex;
 						annotation.LocationGuid = location.LocationGuid;
+						annotation.GeocodeResult = location.LocationGeocodeResult;
+						annotation.ShipLocationHistoryResult = location;
 						this.locationMapView.AddAnnotation(annotation);
 
 					}
@@ -153,5 +155,7 @@ namespace DANFS.iOS
 	{
 		public int LocationIndex { get; set; }
 		public string LocationGuid { get; set;}
+		public GeocodeResultMain GeocodeResult { get; set;}
+		public ShipLocationHistoryResult ShipLocationHistoryResult { get; set;}
 	}
 }

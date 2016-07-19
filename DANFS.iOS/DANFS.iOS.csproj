@@ -120,6 +120,14 @@
     <Compile Include="ShipDocumentViewController.designer.cs">
       <DependentUpon>ShipDocumentViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="LocationTableViewController.cs" />
+    <Compile Include="LocationTableViewController.designer.cs">
+      <DependentUpon>LocationTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LocationShipTableViewController.cs" />
+    <Compile Include="LocationShipTableViewController.designer.cs">
+      <DependentUpon>LocationShipTableViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>

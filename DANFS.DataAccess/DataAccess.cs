@@ -116,7 +116,31 @@ namespace DANFS.DataAccess
 			return query.ToList();
 		}
 
+		public List<string> GetUniqueLocationList()
+		{
+			var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MapDatabasePath);
 
+
+
+			var query = connection.Table<shipLocationDate>().OrderBy(r => r.locationname);
+
+			return query.Select(r => r.locationname).Distinct().ToList();
+		}
+
+		public List<shipLocationDate> GetShipListByLocation(string locationName)
+		{
+			var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MapDatabasePath);
+
+
+
+			var query = connection.Table<shipLocationDate>().Where(r => r.locationname == locationName).OrderBy(r => r.startdate);
+
+			return query.ToList();
+		}
 
 		public async Task<List<ShipLocationHistoryResult>> GetRawGeolocationsForShip(ShipToken ship)
 		{
@@ -168,14 +192,7 @@ namespace DANFS.DataAccess
 			return mainShipLocationResults;
 		}
 
-				public class shipLocationDate
-				{
-					public string shipID {get; set;}
-					public string locationname {get; set;}
-					public string startdate {get; set;}
-					public string enddate {get; set;}
-					public string locationguid { get; set;}
-				}
+				
 
 		public class locationJSON
 		{
@@ -197,7 +214,7 @@ namespace DANFS.DataAccess
 			{
 				var table = connection.Table<shipLocationDate>();
 
-				var query = table.Where(r => r.shipID == ship.ID)/*.OrderBy(r => r.startdate)*/;
+				var query = table.Where(r => r.shipID == ship.ID).OrderBy(r => r.startdate);
 
 				return query.Select(r => r.locationname).ToList();
 			}
