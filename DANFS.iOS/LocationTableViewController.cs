@@ -21,17 +21,21 @@ namespace DANFS.iOS
 			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess>();
 			Locations = dataAccess.GetUniqueLocationList();
 
-			var searchController = new UISearchController((UIViewController)null)
+			SearchController = new UISearchController((UIViewController)null)
 			{
 				WeakDelegate = this,
 				DimsBackgroundDuringPresentation = false,
-				WeakSearchResultsUpdater = this
+				WeakSearchResultsUpdater = this,
+				//HidesNavigationBarDuringPresentation = false
+				DefinesPresentationContext = true
 			};
 
-			searchController.SearchBar.SizeToFit();
+			SearchController.SearchBar.SizeToFit();
 
-			this.TableView.TableHeaderView = searchController.SearchBar;
+			this.TableView.TableHeaderView = SearchController.SearchBar;
 		}
+
+		UISearchController SearchController { get; set; }
 
 		List<string> Locations { get; set;}
 
@@ -62,10 +66,13 @@ namespace DANFS.iOS
 
 		public override void PrepareForSegue(UIStoryboardSegue segue, Foundation.NSObject sender)
 		{
+			SearchController.SearchBar.ResignFirstResponder();
+			
 			if (segue.DestinationViewController is LocationShipTableViewController)
 			{
 				var locationShipTableViewController = segue.DestinationViewController as LocationShipTableViewController;
 				locationShipTableViewController.LocationName = SearchLocationList != null ? SearchLocationList[TableView.IndexPathForSelectedRow.Row] : Locations[TableView.IndexPathForSelectedRow.Row];
+				SearchController.Active = false;
 			}
 		}
 

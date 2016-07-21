@@ -44,7 +44,7 @@ namespace DANFS.DataAccess
 			{
 				sb.Append("<span id=\"location-");
 				sb.Append(element.Attribute("location_guid").Value);
-				sb.Append("\" >");
+				sb.Append("\" style=\"color:red\">");
 			}
 
 			foreach (var childNode in element.Nodes())

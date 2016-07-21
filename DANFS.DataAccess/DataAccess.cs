@@ -137,9 +137,11 @@ namespace DANFS.DataAccess
 
 
 
-			var query = connection.Table<shipLocationDate>().Where(r => r.locationname == locationName).OrderBy(r => r.startdate);
+			var query = connection.Table<shipLocationDate>().Where(r => r.locationname == locationName);
 
-			return query.ToList();
+			var result = query.ToList();
+
+			return result.OrderBy(r => r.OrderedDate).ToList();
 		}
 
 		public async Task<List<ShipLocationHistoryResult>> GetRawGeolocationsForShip(ShipToken ship)

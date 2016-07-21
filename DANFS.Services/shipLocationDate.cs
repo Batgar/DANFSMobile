@@ -8,6 +8,29 @@ namespace DANFS.Services
 		public string startdate { get; set; }
 		public string enddate { get; set; }
 		public string locationguid { get; set; }
+
+		public string OrderedDate
+		{
+			get
+			{
+				if (!string.IsNullOrEmpty(startdate))
+				{
+					try
+					{
+						var dateTime = DateTime.Parse(startdate);
+						return dateTime.ToString("yyyy-MM-dd");
+					}
+					catch
+					{
+						
+					}
+				}
+
+				return DateTime.MinValue.ToString("yyyy-MM-dd");
+			}
+		}
+
+
 	}
 }
 

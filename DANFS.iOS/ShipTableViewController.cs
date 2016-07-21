@@ -2,11 +2,12 @@
 using UIKit;
 using DANFS.Services;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DANFS.iOS
 {
 	[Foundation.Register ("ShipTableViewController")]
-	public class ShipTableViewController : UITableViewController
+	public class ShipTableViewController : UITableViewController, IUISearchResultsUpdating
 	{
 		public ShipTableViewController (IntPtr handle) : base(handle)
 		{
@@ -17,19 +18,47 @@ namespace DANFS.iOS
 			base.ViewDidLoad ();
 
 			LoadShips (); //This loads 480KB of JSON and processes 12,000 entries into an IList<IShipToken>
+
+			SearchController = new UISearchController((UIViewController)null)
+			{
+				WeakDelegate = this,
+				DimsBackgroundDuringPresentation = false,
+				WeakSearchResultsUpdater = this,
+				//HidesNavigationBarDuringPresentation = false
+				DefinesPresentationContext = true
+			};
+
+			SearchController.SearchBar.SizeToFit();
+
+			this.TableView.TableHeaderView = SearchController.SearchBar;
 		}
+
+		UISearchController SearchController { get; set;}
 
 		private async void LoadShips()
 		{
 			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess> ();
 
-			this.Ships = await dataAccess.GetAllShips ();
+			this.AllShips = await dataAccess.GetAllShips ();
 
 			//It may have taken a while for the ships to load. Refresh the list.
 			this.TableView.ReloadData();
 		}
 
-		IList<ShipToken> Ships {get; set;}
+		IList<ShipToken> AllShips { get; set;}
+		IList<ShipToken> SearchShips { get; set;}
+
+		IList<ShipToken> Ships
+		{
+			get
+			{
+				if (SearchShips != null)
+				{
+					return SearchShips;
+				}
+				return AllShips;
+			}
+		}
 
 
 		public override nint RowsInSection (UITableView tableView, nint section)
@@ -61,6 +90,8 @@ namespace DANFS.iOS
 		{
 			base.PrepareForSegue (segue, sender);
 
+			SearchController.SearchBar.ResignFirstResponder();
+
 			//Take the sender, find the UITableViewCell and get the index path for it.
 
 			var indexPath = this.TableView.IndexPathForSelectedRow;
@@ -69,6 +100,19 @@ namespace DANFS.iOS
 			if (shipViewController != null) {
 				shipViewController.Ship = this.Ships [indexPath.Row];
 			}
+		}
+
+		public void UpdateSearchResultsForSearchController(UISearchController searchController)
+		{
+			if (string.IsNullOrEmpty(searchController.SearchBar.Text))
+			{
+				SearchShips = null;
+				TableView.ReloadData();
+				return;
+			}
+
+			SearchShips = AllShips.Where(r => r.Title.Contains(searchController.SearchBar.Text)).ToList();
+			TableView.ReloadData();
 		}
 	}
 }
