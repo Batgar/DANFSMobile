@@ -42,6 +42,19 @@ namespace DANFS.DataAccess
 
 		}
 
+		private Dictionary<string, ShipToken> _shipLookup;
+
+		private List<ShipToken> _allShipCache;
+
+		public async Task<Dictionary<string, ShipToken>> GetShipLookupTable()
+		{
+			if (_shipLookup == null)
+			{
+				await GetAllShips();
+			}
+			return _shipLookup;
+		}
+
 		public async Task<System.Collections.Generic.IList<ShipToken>> GetAllShips() {
 			/*var client = new HttpClient ();
 			var stream = await client.GetStreamAsync ("http://s3-us-west-2.amazonaws.com/danfs/manifest.json");
@@ -56,13 +69,44 @@ namespace DANFS.DataAccess
 				return allShipsResponse.Cast<ShipToken> ().ToList();
 			}*/
 
+			if (_allShipCache == null || _shipLookup == null)
+			{
+
+				var connection = new SQLite.Net.SQLiteConnection(
+					TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+					TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MasterDatabasePath);
+
+				var query = connection.Table<danfs_ships>().Select(r => new ShipToken() { ID = r.id, Title = r.title });
+
+				_allShipCache = query.ToList();
+				_shipLookup = new Dictionary<string, ShipToken>(10000);
+				foreach (var entry in _allShipCache)
+				{
+					_shipLookup.Add(entry.ID, entry);
+				}
+			}
+			return _allShipCache;
+		}
+
+		public System.Collections.Generic.IList<ShipToken> GetAllShipChunk(int start, int length)
+		{
 			var connection = new SQLite.Net.SQLiteConnection(
 				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
 				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MasterDatabasePath);
 
-			var query = connection.Table<danfs_ships>().Select(r => new ShipToken() { ID = r.id, Title = r.title});
+			var query = connection.Table<danfs_ships>().Select(r => new ShipToken() { ID = r.id, Title = r.title }).Skip(start).Take(length);
 
 			return query.ToList();
+		}
+
+		public int GetAllShipCounts()
+		{
+			var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MasterDatabasePath);
+
+			var getCountCommand = connection.CreateCommand("select COUNT(*) from danfs_ships");
+			return getCountCommand.ExecuteScalar<int>();
 		}
 
 		public IEnumerable<shipdate> GetTodayInNavyHistoryByYear(string year)
@@ -138,6 +182,20 @@ namespace DANFS.DataAccess
 
 
 			var query = connection.Table<shipLocationDate>().Where(r => r.locationname == locationName);
+
+			var result = query.ToList();
+
+			return result.OrderBy(r => r.OrderedDate).ToList();
+		}
+
+		public List<shipLocationDate> GetShipListByMultipleLocations(List<string> locationNames)
+		{
+			var connection = new SQLite.Net.SQLiteConnection(
+				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
+				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MapDatabasePath);
+
+
+			var query = connection.Table<shipLocationDate>().Where(r => locationNames.Contains(r.locationname));
 
 			var result = query.ToList();
 

@@ -11,6 +11,7 @@ namespace DANFS.iOS
 	{
 		public ShipTableViewController (IntPtr handle) : base(handle)
 		{
+			AllShips = new List<ShipToken>();
 		}
 
 		public override void ViewDidLoad ()
@@ -25,8 +26,10 @@ namespace DANFS.iOS
 				DimsBackgroundDuringPresentation = false,
 				WeakSearchResultsUpdater = this,
 				//HidesNavigationBarDuringPresentation = false
-				DefinesPresentationContext = true
+				DefinesPresentationContext = false
 			};
+
+			DefinesPresentationContext = true;
 
 			SearchController.SearchBar.SizeToFit();
 
@@ -39,13 +42,21 @@ namespace DANFS.iOS
 		{
 			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess> ();
 
-			this.AllShips = await dataAccess.GetAllShips ();
+			//this.AllShips = await dataAccess.GetAllShips ();
+
+			//this.ShipCount = dataAccess.GetAllShipCounts();
+
+			this.AllShips.Clear();
+
+			this.AllShips.AddRange(await dataAccess.GetAllShips());
 
 			//It may have taken a while for the ships to load. Refresh the list.
 			this.TableView.ReloadData();
 		}
 
-		IList<ShipToken> AllShips { get; set;}
+		//int ShipCount { get; set;}
+
+		List<ShipToken> AllShips { get; set;}
 		IList<ShipToken> SearchShips { get; set;}
 
 		IList<ShipToken> Ships
@@ -63,23 +74,25 @@ namespace DANFS.iOS
 
 		public override nint RowsInSection (UITableView tableView, nint section)
 		{
-			if (this.Ships != null) {
-				return this.Ships.Count;
-			}
-			return 0;
+			return Ships.Count;
 		}
 
 		public override nint NumberOfSections (UITableView tableView)
 		{
-			if (this.Ships != null) {
-				return 1;
-			}
-			return 0;
+			return 1;
 		}
 
 		public override UITableViewCell GetCell (UITableView tableView, Foundation.NSIndexPath indexPath)
 		{
 			var cell = this.TableView.DequeueReusableCell ("ShipCellReuseIdentifier");
+
+			/*if (indexPath.Row >= Ships.Count)
+			{
+				//Fetch the next 100 chunk and append into AllShips.
+				var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess>();
+
+				AllShips.AddRange(dataAccess.GetAllShipChunk(AllShips.Count, 100));
+			}*/
 
 			cell.TextLabel.Text = this.Ships [indexPath.Row].Title;
 

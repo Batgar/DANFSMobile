@@ -41,6 +41,28 @@ namespace DANFS.iOS
 			var htmlString = await dataAccess.GetDisplayableHTMLForShip(shipIDToShow);
 
 			ActiveWebView.LoadHtmlString(htmlString, null);
+
+			var shipLookupTable = await dataAccess.GetShipLookupTable();
+
+			this.NavigationItem.Title = shipLookupTable[shipIDToShow].Title;
+
+		}
+
+		public override void ViewWillAppear(bool animated)
+		{
+			base.ViewWillAppear(animated);
+
+			this.NavigationController.Toolbar.Hidden = true;
+
+			this.View.SetNeedsLayout();
+			this.View.LayoutIfNeeded();
+		}
+
+		public override void ViewWillDisappear(bool animated)
+		{
+			base.ViewWillDisappear(animated);
+
+			this.NavigationController.Toolbar.Hidden = false;
 		}
 
 		public override void DidReceiveMemoryWarning()

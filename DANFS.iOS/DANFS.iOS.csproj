@@ -88,6 +88,12 @@
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\CalendarImage.imageset\102_Calendar-Month.png" />
+    <ImageAsset Include="Resources\Images.xcassets\CalendarImage.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\GlobeImage.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\GlobeImage.imageset\107_Globe.png" />
+    <ImageAsset Include="Resources\Images.xcassets\StarImage.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\StarImage.imageset\5_Star-%28alt%29.png" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
@@ -131,7 +137,6 @@
       <DependentUpon>FilterDateViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="DateTimeExtensions.cs" />
-    <Compile Include="LocationShipTableViewResultsController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
@@ -154,5 +159,10 @@
     </BundleResource>
     <BundleResource Include="shipdates.sqlite" />
     <BundleResource Include="danfs-augmented.sqlite3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Images.xcassets\CalendarImage.imageset\" />
+    <Folder Include="Resources\Images.xcassets\GlobeImage.imageset\" />
+    <Folder Include="Resources\Images.xcassets\StarImage.imageset\" />
   </ItemGroup>
 </Project>

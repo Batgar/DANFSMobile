@@ -18,13 +18,13 @@ namespace DANFS.iOS
 		{
 		}
 
-		public override void ViewDidLoad()
+		public override async void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 
 			locationMapView.Delegate = this;
 
-			//this.mainTextView.Text = Ship.Title;
+			this.NavigationItem.Title = this.Ship.Title;
 
 			RefreshWithLocations();
 

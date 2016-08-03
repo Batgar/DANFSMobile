@@ -26,6 +26,14 @@ namespace DANFS.Services
 
 		List<shipLocationDate> GetShipListByLocation(string locationName);
 
+		List<shipLocationDate> GetShipListByMultipleLocations(List<string> locationNames);
+
+		int GetAllShipCounts();
+
+		IList<ShipToken> GetAllShipChunk(int start, int length);
+
+		Task<Dictionary<string, ShipToken>> GetShipLookupTable();
+
 	}
 
 	public class GeocodeResultMain

@@ -13,10 +13,20 @@ namespace DANFS.iOS
 			
 		}
 
+		bool SendAllToLocationShipView { get; set;}
+
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 			// Perform any additional setup after loading the view, typically from a nib.
+
+			UIBarButtonItem viewAllButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.FastForward, (sender, e) =>
+			{
+				SendAllToLocationShipView = true;
+				this.PerformSegue("ShipsByLocationSegue", null);
+			});
+
+			this.SetToolbarItems(new UIBarButtonItem[] { viewAllButtonItem }, false);
 
 			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess>();
 			Locations = dataAccess.GetUniqueLocationList();
@@ -27,8 +37,10 @@ namespace DANFS.iOS
 				DimsBackgroundDuringPresentation = false,
 				WeakSearchResultsUpdater = this,
 				//HidesNavigationBarDuringPresentation = false
-				DefinesPresentationContext = true
+				DefinesPresentationContext = false
 			};
+
+			DefinesPresentationContext = true;
 
 			SearchController.SearchBar.SizeToFit();
 
@@ -66,13 +78,19 @@ namespace DANFS.iOS
 
 		public override void PrepareForSegue(UIStoryboardSegue segue, Foundation.NSObject sender)
 		{
-			SearchController.SearchBar.ResignFirstResponder();
-			
 			if (segue.DestinationViewController is LocationShipTableViewController)
 			{
 				var locationShipTableViewController = segue.DestinationViewController as LocationShipTableViewController;
-				locationShipTableViewController.LocationName = SearchLocationList != null ? SearchLocationList[TableView.IndexPathForSelectedRow.Row] : Locations[TableView.IndexPathForSelectedRow.Row];
-				SearchController.Active = false;
+
+				if (SendAllToLocationShipView)
+				{
+					locationShipTableViewController.LocationNames = SearchLocationList;
+				}
+				else
+				{
+					locationShipTableViewController.LocationName = SearchLocationList != null ? SearchLocationList[TableView.IndexPathForSelectedRow.Row] : Locations[TableView.IndexPathForSelectedRow.Row];
+				}
+				SendAllToLocationShipView = false;
 			}
 		}
 

@@ -7,7 +7,7 @@ using Foundation;
 
 namespace DANFS.iOS
 {
-	public partial class LocationShipTableViewController : UITableViewController, IUISearchControllerDelegate
+	public partial class LocationShipTableViewController : UITableViewController, IUISearchResultsUpdating
 	{
 		public LocationShipTableViewController(IntPtr handle) : base(handle)
 		{
@@ -17,27 +17,31 @@ namespace DANFS.iOS
 			FilterApplied = false;
 		}
 
+		public List<string> LocationNames { get; internal set; }
+
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 
 
 			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess>();
-			AllShipDates = dataAccess.GetShipListByLocation(this.LocationName);
 
-			UIStoryboard sb = UIStoryboard.FromName("Main", null);
-			var mainNavigationController = (sb.InstantiateViewController("LocationShipResultsViewID") as UINavigationController);
-			ResultsController = mainNavigationController.ViewControllers[0] as LocationShipTableViewResultsController;
-			ResultsController.AllShipDates = AllShipDates;
-			//this.NavigationController.DefinesPresentationContext = true;
-			//var resultsController = new LocationShipTableViewResultsController();
-
-			SearchController = new UISearchController(mainNavigationController)
+			if (this.LocationNames == null)
 			{
-				WeakDelegate = this,
+				AllShipDates = dataAccess.GetShipListByLocation(this.LocationName);
+			}
+			else
+			{
+				AllShipDates = dataAccess.GetShipListByMultipleLocations(this.LocationNames);
+			}
+
+
+
+			SearchController = new UISearchController((UIViewController)null)
+			{
 				DimsBackgroundDuringPresentation = false,
-				WeakSearchResultsUpdater = ResultsController,
-				HidesNavigationBarDuringPresentation = true,
+				WeakSearchResultsUpdater = this,
+				HidesNavigationBarDuringPresentation = false,
 				DefinesPresentationContext = false
 			};
 
@@ -51,13 +55,20 @@ namespace DANFS.iOS
 
 		}
 
-		LocationShipTableViewResultsController ResultsController { get; set;}
-
-		[Export("presentSearchController:")]
-		public void PresentSearchController(UISearchController searchController)
+		public override void ViewWillAppear(bool animated)
 		{
-			ResultsController.AllShipDates = this.SearchShipDates != null ? this.SearchShipDates : this.AllShipDates;
+			base.ViewWillAppear(animated);
+
+			this.NavigationController.Toolbar.Hidden = true;
 		}
+
+		public override void ViewWillDisappear(bool animated)
+		{
+			base.ViewWillDisappear(animated);
+
+			this.NavigationController.Toolbar.Hidden = false;
+		}
+
 
 		UISearchController SearchController { get; set;}
 
@@ -138,20 +149,26 @@ namespace DANFS.iOS
 					this.FilterDayRange = filterDateViewController.DayRange;
 					this.FilterApplied = true;
 				}
-				UpdateListFilter();
+				UpdateSearch();
 			}
 		}
 
 		public List<shipLocationDate> SearchShipDates { get; private set; }
 
-		private void UpdateListFilter()
+		private void UpdateSearch()
 		{
-			
-
+			if (string.IsNullOrEmpty(SearchController.SearchBar.Text))
+			{
+				SearchShipDates = null;
+			}
+			else
+			{
+				SearchShipDates = AllShipDates.Where(r => r.shipID.ToLower().Contains(SearchController.SearchBar.Text.ToLower())).ToList();
+			}
 
 			if (this.FilterApplied)
 			{
-				SearchShipDates = AllShipDates.Where(r =>
+				SearchShipDates = CurrentShipDates.Where(r =>
 				{
 					if (string.IsNullOrEmpty(r.startdate))
 					{
@@ -174,12 +191,13 @@ namespace DANFS.iOS
 
 				}).ToList();
 			}
-			else
-			{
-				SearchShipDates = null;
-			}
 
 			TableView.ReloadData();
+		}
+
+		public void UpdateSearchResultsForSearchController(UISearchController searchController)
+		{
+			UpdateSearch();
 		}
 
 		private DateTime FilterDateTime { get; set; }
