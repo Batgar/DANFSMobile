@@ -40,6 +40,22 @@ namespace DANFS.DataAccess
 				sb.Append("<html><body>");
 			}
 
+			if (element.Name == "shipmetrics")
+			{
+				sb.Append("<table>");
+			}
+
+			if (element.Name == "metric")
+			{
+				sb.Append("<tr>");
+			}
+
+			if (element.Name == "key" ||
+			   element.Name == "value")
+			{
+				sb.Append("<td>");
+			}
+
 			if (element.Name == "LOCATION")
 			{
 				sb.Append("<span id=\"location-");
@@ -78,6 +94,22 @@ namespace DANFS.DataAccess
 			if (element.Name == "date" || element.Name == "LOCATION")
 			{
 				sb.Append("</span>");
+			}
+
+			if (element.Name == "shipmetrics")
+			{
+				sb.Append("</table>");
+			}
+
+			if (element.Name == "metric")
+			{
+				sb.Append("</tr>");
+			}
+
+			if (element.Name == "key" ||
+			   element.Name == "value")
+			{
+				sb.Append("</td>");
 			}
 		}
 	}

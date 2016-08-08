@@ -19,7 +19,7 @@ namespace DANFS.iOS
 
 		public List<string> LocationNames { get; internal set; }
 
-		public override void ViewDidLoad()
+		public override async void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 
@@ -52,7 +52,7 @@ namespace DANFS.iOS
 
 			this.TableView.TableHeaderView = SearchController.SearchBar;
 
-
+			_lookupTable = await dataAccess.GetShipLookupTable();
 		}
 
 		public override void ViewWillAppear(bool animated)
@@ -137,12 +137,27 @@ namespace DANFS.iOS
 			throw new Exception("Invalid section row data retrieval");
 		}
 
+		Dictionary<string, ShipToken> _lookupTable;
+
 		public override UITableViewCell GetCell(UITableView tableView, Foundation.NSIndexPath indexPath)
 		{
 			var cell = tableView.DequeueReusableCell("LocationShipCell");
 			var cellData = GetShipLocationDateForSectionAndRow(indexPath.Section, indexPath.Row);
-			cell.TextLabel.Text = cellData.shipID;
-			cell.DetailTextLabel.Text = cellData.startdate;
+
+			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess>();
+
+			cell.TextLabel.Text = _lookupTable[cellData.shipID].Title;
+
+
+			DateTime startDateTime;
+			if (DateTime.TryParse(cellData.startdate, out startDateTime))
+			{
+				cell.DetailTextLabel.Text = startDateTime.ToShortDateString();
+			}
+			else 
+			{
+				cell.DetailTextLabel.Text = string.Empty;
+			}
 			return cell;
 		}
 

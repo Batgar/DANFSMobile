@@ -222,6 +222,9 @@ namespace DANFS.DataAccess
 
 		public async Task<List<ShipLocationHistoryResult>> GetRawGeolocationsForShip(ShipToken ship)
 		{
+
+			var sw = System.Diagnostics.Stopwatch.StartNew();
+
 			var connection = new SQLite.Net.SQLiteConnection (
 				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
 				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MapDatabasePath);
@@ -229,12 +232,12 @@ namespace DANFS.DataAccess
 
 			List<ShipLocationHistoryResult> mainShipLocationResults = new List<ShipLocationHistoryResult> ();
 
-			var query = connection.Table<shipLocationDate> ().Where (r => r.shipID == ship.ID).OrderBy (r => r.startdate);
+			var query = connection.Table<shipLocationDate>().Where(r => r.shipID == ship.ID && r.shiplocationdatetype == "log");//.OrderBy (r => r.startdate);
 
 			int locationIndex = 1;
 
 			foreach (var shipLocation in query) {
-				var possibleLocation = connection.Table<locationJSON> ().FirstOrDefault (l => l.name == shipLocation.locationname);
+				var possibleLocation = connection.Table<locationJSON> ().Where (l => l.name == shipLocation.locationname).FirstOrDefault();
 
 				if (possibleLocation == null)
 				{
@@ -266,6 +269,10 @@ namespace DANFS.DataAccess
 					mainGeocodeResults.Add(JsonConvert.DeserializeObject<GeocodeResultMain>(locationJSONEntry.geocodeJSON));
 				}*/
 			}
+
+			sw.Stop();
+
+			System.Diagnostics.Debug.WriteLine($"Total geolocation query time: {sw.ElapsedMilliseconds} ms");
 
 			return mainShipLocationResults;
 		}
