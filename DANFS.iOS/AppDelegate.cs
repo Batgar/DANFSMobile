@@ -4,6 +4,8 @@ using DANFS.Services;
 using SQLite.Net.Interop;
 using DANFS.Shared;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace DANFS.iOS
 {
@@ -51,6 +53,15 @@ namespace DANFS.iOS
 			get
 			{
 				return NSBundle.MainBundle.PathForResource("danfs-augmented", "sqlite3");
+			}
+		}
+
+		public Stream UniqueLocationsFileStream
+		{
+			get
+			{
+				var assembly = typeof(SharedRoot).GetTypeInfo().Assembly;
+				return assembly.GetManifestResourceStream("DANFS.Shared.UniqueLocations.txt");
 			}
 		}
 

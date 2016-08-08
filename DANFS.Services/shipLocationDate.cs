@@ -30,6 +30,8 @@ namespace DANFS.Services
 			}
 		}
 
+		public string shiplocationdatetype { get; set;}
+
 
 	}
 }

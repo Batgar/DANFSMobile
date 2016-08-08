@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace DANFS.Services
 {
@@ -8,6 +9,8 @@ namespace DANFS.Services
 
 		string DateDatabasePath { get; }
 		string MapDatabasePath {get;}
+
+		Stream UniqueLocationsFileStream { get; }
 	}
 }
 

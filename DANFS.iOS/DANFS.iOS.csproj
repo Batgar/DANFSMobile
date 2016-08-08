@@ -159,6 +159,7 @@
     </BundleResource>
     <BundleResource Include="shipdates.sqlite" />
     <BundleResource Include="danfs-augmented.sqlite3" />
+    <BundleResource Include="Resources\UniqueLocations.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Images.xcassets\CalendarImage.imageset\" />

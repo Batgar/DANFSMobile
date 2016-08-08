@@ -3,6 +3,7 @@ using DANFS.Services;
 using DANFS.Shared;
 using Java.IO;
 using Android.Content;
+using System.IO;
 
 namespace DANFS.Android
 {
@@ -87,6 +88,14 @@ namespace DANFS.Android
 		}
 
 		public string MasterDatabasePath
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public Stream UniqueLocationsFileStream
 		{
 			get
 			{

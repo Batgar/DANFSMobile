@@ -162,7 +162,7 @@ namespace DANFS.DataAccess
 
 		public List<string> GetUniqueLocationList()
 		{
-			var connection = new SQLite.Net.SQLiteConnection(
+			/*var connection = new SQLite.Net.SQLiteConnection(
 				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
 				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MapDatabasePath);
 
@@ -170,7 +170,25 @@ namespace DANFS.DataAccess
 
 			var query = connection.Table<shipLocationDate>().OrderBy(r => r.locationname);
 
-			return query.Select(r => r.locationname).Distinct().ToList();
+			return query.Select(r => r.locationname).Distinct().ToList();*/
+
+			Stream stream = TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().UniqueLocationsFileStream;
+
+			var uniqueLocations = new List<string>();
+
+			using (var reader = new System.IO.StreamReader(stream))
+			{
+				var nextLine = reader.ReadLine();
+				while (!string.IsNullOrEmpty(nextLine))
+				{
+					uniqueLocations.Add(nextLine);
+					nextLine = reader.ReadLine();
+				}
+			}
+
+			uniqueLocations.Sort();
+
+			return uniqueLocations;
 		}
 
 		public List<shipLocationDate> GetShipListByLocation(string locationName)

@@ -97,19 +97,52 @@ namespace DANFS.iOS
 
 		public override nint NumberOfSections(UITableView tableView)
 		{
-			return 1;
+			return 2;
 		}
 
 		public override nint RowsInSection(UITableView tableView, nint section)
 		{
-			return CurrentShipDates.Count;
+			switch (section)
+			{
+				case 0:
+					return CurrentShipDates.Count(o => o.shiplocationdatetype == "namehistory");
+				case 1:
+					return CurrentShipDates.Count(o => o.shiplocationdatetype == "log");
+			}
+			throw new Exception("Invalid section row retrieval");
+		}
+
+		public override string TitleForHeader(UITableView tableView, nint section)
+		{
+			switch (section)
+			{
+				case 0:
+					return "Ship Name History";
+				case 1:
+					return "Log";
+
+			}
+			throw new Exception("Invalid section title for header retrieval");
+		}
+
+		shipLocationDate GetShipLocationDateForSectionAndRow(int section, int rowIndex)
+		{
+			switch (section)
+			{
+				case 0:
+				return CurrentShipDates.Where(o => o.shiplocationdatetype == "namehistory").ElementAt(rowIndex);
+				case 1:
+				return CurrentShipDates.Where(o => o.shiplocationdatetype == "log").ElementAt(rowIndex);
+			}
+			throw new Exception("Invalid section row data retrieval");
 		}
 
 		public override UITableViewCell GetCell(UITableView tableView, Foundation.NSIndexPath indexPath)
 		{
 			var cell = tableView.DequeueReusableCell("LocationShipCell");
-			cell.TextLabel.Text = CurrentShipDates[indexPath.Row].shipID;
-			cell.DetailTextLabel.Text = CurrentShipDates[indexPath.Row].startdate;
+			var cellData = GetShipLocationDateForSectionAndRow(indexPath.Section, indexPath.Row);
+			cell.TextLabel.Text = cellData.shipID;
+			cell.DetailTextLabel.Text = cellData.startdate;
 			return cell;
 		}
 
@@ -117,7 +150,7 @@ namespace DANFS.iOS
 		{
 			if (segue.DestinationViewController is ShipDocumentViewController)
 			{
-				var shipDate = CurrentShipDates[TableView.IndexPathForSelectedRow.Row];
+				var shipDate = this.GetShipLocationDateForSectionAndRow(TableView.IndexPathForSelectedRow.Section, TableView.IndexPathForSelectedRow.Row);
 				var destinationController = segue.DestinationViewController as ShipDocumentViewController;
 				destinationController.ShipId = shipDate.shipID;
 				destinationController.LocationGuidToHighlight = shipDate.locationguid;
