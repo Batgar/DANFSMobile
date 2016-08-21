@@ -38,7 +38,13 @@ namespace DANFS.iOS
 		{
 			var cell = this.TableView.DequeueReusableCell("LocationCell");
 
-			cell.TextLabel.Text = ShipLocations[indexPath.Row].Location;
+			var shipLocation = ShipLocations[indexPath.Row];
+
+			cell.TextLabel.Text = shipLocation.Location;
+
+			cell.DetailTextLabel.Text = string.Empty;
+
+			cell.DetailTextLabel.Text = shipLocation.PossibleStartDate?.ToShortDateString();
 
 			return cell;
 		}
