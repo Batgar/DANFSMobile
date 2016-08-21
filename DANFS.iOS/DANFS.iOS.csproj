@@ -137,6 +137,14 @@
       <DependentUpon>FilterDateViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="LocationMapViewController.cs" />
+    <Compile Include="LocationMapViewController.designer.cs">
+      <DependentUpon>LocationMapViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShipViewLocationTableViewController.cs" />
+    <Compile Include="ShipViewLocationTableViewController.designer.cs">
+      <DependentUpon>ShipViewLocationTableViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>

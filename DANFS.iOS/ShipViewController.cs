@@ -12,126 +12,18 @@ using CoreGraphics;
 
 namespace DANFS.iOS
 {
-	public partial class ShipViewController : UIViewController, IMKMapViewDelegate
+	public partial class ShipViewController : UIViewController
 	{
 		public ShipViewController(IntPtr handle) : base(handle)
 		{
 		}
 
-		public override async void ViewDidLoad()
+		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 
-			locationMapView.Delegate = this;
-
 			this.NavigationItem.Title = this.Ship.Title;
 
-			RefreshWithLocations();
-
-		}
-
-		async void RefreshWithLocations()
-		{
-			//Load all the locations for this ship.
-			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess>();
-			var locations = await dataAccess.GetLocationsForShip(this.Ship);
-			mainTextView.Text = string.Join("\n", locations);
-
-			var shipLocations = await dataAccess.GetRawGeolocationsForShip(this.Ship);
-
-			foreach (var location in shipLocations)
-			{
-				if (location.LocationGeocodeResult != null)
-				{
-					//Only plot the first result.
-					var result = location.LocationGeocodeResult.Results.FirstOrDefault();
-					if (result == null)
-					{
-						continue;
-					}
-					var geometry = result.Geometry;
-					if (geometry != null && geometry.Viewport != null)
-					{
-						var val = geometry.Viewport.Values.FirstOrDefault();
-
-						if (val == null)
-						{
-							continue;
-						}
-
-						var lat = val.Lat;
-						var longitude = val.Long;
-
-						var annotation = new LocationAnnotation();
-						annotation.SetCoordinate(new CoreLocation.CLLocationCoordinate2D(lat, longitude));
-						annotation.Title = location.Location + "-" + location.PossibleStartDate.GetValueOrDefault() + "-" + location.PossibleEndDate.GetValueOrDefault();
-						annotation.LocationIndex = location.LocationIndex;
-						annotation.LocationGuid = location.LocationGuid;
-						annotation.GeocodeResult = location.LocationGeocodeResult;
-						annotation.ShipLocationHistoryResult = location;
-						this.locationMapView.AddAnnotation(annotation);
-
-					}
-				}
-			}
-		}
-
-		[Export("mapView:viewForAnnotation:")]
-		public MKAnnotationView GetViewForAnnotation(MKMapView mapView, IMKAnnotation annotation)
-		{
-			if (annotation is LocationAnnotation)
-			{
-				// Try to dequeue an existing pin view first.
-				var pinView = (MKAnnotationView)mapView.DequeueReusableAnnotation("CustomPinAnnotationView");
-				if (pinView == null)
-				{
-					// If an existing pin view was not available, create one.
-					pinView = new MKAnnotationView(annotation, @"CustomPinAnnotationView");
-				}
-
-				//pinView.animatesDrop = YES;
-				pinView.CanShowCallout = true;
-				//pinView.Image = new UIImage(@"pizza_slice_32.png");
-				pinView.CalloutOffset = new CGPoint(0, 32);
-
-				UILabel label;
-				if (pinView.Subviews.Count() == 0)
-				{
-					label = new UILabel();
-					pinView.AddSubview(label);
-				}
-				else
-				{
-					label = pinView.Subviews[0] as UILabel;
-				}
-
-				label.Text = Convert.ToString((annotation as LocationAnnotation).LocationIndex);
-				label.SizeToFit();
-
-
-				return pinView;
-			}
-			else if (annotation is MKPointAnnotation)
-			{
-				return new MKPinAnnotationView(annotation, null);
-			}
-			else 
-			{
-				return null;
-			}
-		}
-
-		private LocationAnnotation _lastSelectedLocationAnnotation;
-
-		[Export("mapView:didSelectAnnotationView:")]
-		public void DidSelectAnnotationView(MKMapView mapView, MKAnnotationView view)
-		{
-			if (view.Annotation is LocationAnnotation)
-			{
-				_lastSelectedLocationAnnotation = view.Annotation as LocationAnnotation;
-				//TODO: Navigate to the ShipDocumentViewController and highlight the location within it.
-				this.PerformSegue("ShowLocationDocumentSegue", this);
-			}
 		}
 
 		public ShipToken Ship { get; set; }
@@ -141,21 +33,37 @@ namespace DANFS.iOS
 		{
 			base.PrepareForSegue(segue, sender);
 
-			if (segue.Identifier == "ShowLocationDocumentSegue")
+			if (segue.DestinationViewController is LocationMapViewController)
 			{
-				var shipDocumentViewController = segue.DestinationViewController as ShipDocumentViewController;
-				shipDocumentViewController.ShipId = this.Ship.ID;
-				shipDocumentViewController.LocationGuidToHighlight = _lastSelectedLocationAnnotation.LocationGuid;
+				var controller = segue.DestinationViewController as LocationMapViewController;
+				controller.Ship = this.Ship;
 			}
+			else if (segue.DestinationViewController is ShipViewLocationTableViewController)
+			{
+				var controller = segue.DestinationViewController as ShipViewLocationTableViewController;
+				controller.Ship = this.Ship;
+			}
+		}
+
+		partial void showComponent(NSObject sender)
+		{
+			var segmentedControl = sender as UISegmentedControl;
+			switch (segmentedControl.SelectedSegment)
+			{
+				case 0:
+					this.mapContainerView.Hidden = true;
+					this.locationsContainerView.Hidden = false;
+					break;
+
+				case 1:
+					this.mapContainerView.Hidden = false;
+					this.locationsContainerView.Hidden = true;
+					break;
+			}
+
 		}
 
 	}
 
-	class LocationAnnotation : MKPointAnnotation
-	{
-		public int LocationIndex { get; set; }
-		public string LocationGuid { get; set;}
-		public GeocodeResultMain GeocodeResult { get; set;}
-		public ShipLocationHistoryResult ShipLocationHistoryResult { get; set;}
-	}
+
 }
