@@ -129,7 +129,7 @@ namespace DANFS.iOS
 			{
 				_lastSelectedLocationAnnotation = view.Annotation as LocationAnnotation;
 				//TODO: Navigate to the ShipDocumentViewController and highlight the location within it.
-				this.PerformSegue("ShowLocationDocumentSegue", this);
+				this.PerformSegue("ShowShipDocumentSegue", this);
 			}
 		}
 

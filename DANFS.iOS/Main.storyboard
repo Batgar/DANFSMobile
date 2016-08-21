@@ -226,7 +226,7 @@
                         <viewControllerLayoutGuide type="bottom" id="lLf-cC-vDM"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="AS5-AY-bOr">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="455"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <webView contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a6N-dv-Rx8">
@@ -534,6 +534,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="1h5-1e-oaE" kind="show" id="weK-j5-0Yc"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -572,6 +575,7 @@
                     </view>
                     <connections>
                         <outlet property="locationMapView" destination="XCM-M8-fRZ" id="e4M-Bs-h10"/>
+                        <segue destination="1h5-1e-oaE" kind="show" identifier="ShowShipDocumentSegue" id="3AY-qq-ghY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZMS-a9-ofc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -584,4 +588,7 @@
         <image name="GlobeImage" width="25" height="25"/>
         <image name="StarImage" width="25" height="25"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="3AY-qq-ghY"/>
+    </inferredMetricsTieBreakers>
 </document>

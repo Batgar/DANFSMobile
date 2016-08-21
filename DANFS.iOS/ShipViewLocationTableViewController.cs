@@ -63,10 +63,16 @@ namespace DANFS.iOS
 			return 0;
 		}
 
-		public override void PerformSegue(string identifier, NSObject sender)
+		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
 		{
-			
-			base.PerformSegue(identifier, sender);
+			if (segue.DestinationViewController is ShipDocumentViewController)
+			{
+				var lastSelectedLocation = this.ShipLocations[this.TableView.IndexPathForSelectedRow.Row];
+				var shipDocumentViewController = segue.DestinationViewController as ShipDocumentViewController;
+				shipDocumentViewController.ShipId = this.Ship.ID;
+				shipDocumentViewController.LocationGuidToHighlight = lastSelectedLocation.LocationGuid;
+			}
+			base.PrepareForSegue(segue, sender);
 		}
 	}
 }
