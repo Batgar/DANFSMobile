@@ -2,6 +2,7 @@
 
 using System;
 using DANFS.Services;
+using System.Collections.Generic;
 using Foundation;
 using UIKit;
 
@@ -14,5 +15,52 @@ namespace DANFS.iOS
 		}
 
 		public ShipToken Ship { get; internal set; }
+
+		public List<ShipLocationHistoryResult> ShipLocations { get; private set; }
+
+
+		async void RefreshWithLocations()
+		{
+			//Load all the locations for this ship.
+			var dataAccess = TinyIoC.TinyIoCContainer.Current.Resolve<IDataAccess>();
+
+			ShipLocations = await dataAccess.GetRawGeolocationsForShip(this.Ship);
+		}
+
+		public override void ViewDidLoad()
+		{
+			base.ViewDidLoad();
+
+			RefreshWithLocations();
+		}
+
+		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
+		{
+			var cell = this.TableView.DequeueReusableCell("LocationCell");
+
+			cell.TextLabel.Text = ShipLocations[indexPath.Row].Location;
+
+			return cell;
+		}
+
+		public override nint NumberOfSections(UITableView tableView)
+		{
+			return ShipLocations != null ? 1 : 0;
+		}
+
+		public override nint RowsInSection(UITableView tableView, nint section)
+		{
+			if (ShipLocations != null)
+			{
+				return ShipLocations.Count;
+			}
+			return 0;
+		}
+
+		public override void PerformSegue(string identifier, NSObject sender)
+		{
+			
+			base.PerformSegue(identifier, sender);
+		}
 	}
 }
