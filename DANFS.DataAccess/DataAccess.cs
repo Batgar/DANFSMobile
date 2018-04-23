@@ -197,8 +197,6 @@ namespace DANFS.DataAccess
 				TinyIoC.TinyIoCContainer.Current.Resolve<ISQLitePlatform>(),
 				TinyIoC.TinyIoCContainer.Current.Resolve<IFolderProvider>().MapDatabasePath);
 
-
-
 			var query = connection.Table<shipLocationDate>().Where(r => r.locationname == locationName);
 
 			var result = query.ToList();
@@ -232,6 +230,7 @@ namespace DANFS.DataAccess
 
 			List<ShipLocationHistoryResult> mainShipLocationResults = new List<ShipLocationHistoryResult> ();
 
+			//Only return raw log results. Don't return the history portion of the results.
 			var query = connection.Table<shipLocationDate>().Where(r => r.shipID == ship.ID && r.shiplocationdatetype == "log");//.OrderBy (r => r.startdate);
 
 			int locationIndex = 1;
@@ -245,8 +244,8 @@ namespace DANFS.DataAccess
 					continue;
 				}
 
-				DateTime startDate;
-				DateTime endDate;
+                DateTime startDate = DateTime.Now;
+                DateTime endDate = DateTime.Now;
 
 				var hasStartDate = string.IsNullOrEmpty(shipLocation.startdate) ? false : DateTime.TryParse (shipLocation.startdate, out startDate);
 				var hasEndDate = string.IsNullOrEmpty(shipLocation.enddate) ? false : DateTime.TryParse (shipLocation.enddate, out endDate);

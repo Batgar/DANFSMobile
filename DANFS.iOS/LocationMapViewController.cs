@@ -75,7 +75,7 @@ namespace DANFS.iOS
 		}
 
 
-		[Export("mapView:viewForAnnotation:")]
+		/*[Export("mapView:viewForAnnotation:")]
 		public MKAnnotationView GetViewForAnnotation(MKMapView mapView, IMKAnnotation annotation)
 		{
 			if (annotation is LocationAnnotation)
@@ -90,7 +90,6 @@ namespace DANFS.iOS
 
 				//pinView.animatesDrop = YES;
 				pinView.CanShowCallout = true;
-				//pinView.Image = new UIImage(@"pizza_slice_32.png");
 				pinView.CalloutOffset = new CGPoint(0, 32);
 
 				UILabel label;
@@ -118,7 +117,7 @@ namespace DANFS.iOS
 			{
 				return null;
 			}
-		}
+		}*/
 
 		private LocationAnnotation _lastSelectedLocationAnnotation;
 

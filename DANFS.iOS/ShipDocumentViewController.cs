@@ -1,4 +1,5 @@
 ﻿using System;
+using CoreFoundation;
 using DANFS.Services;
 using Foundation;
 using UIKit;
@@ -46,6 +47,11 @@ namespace DANFS.iOS
 
 			this.NavigationItem.Title = shipLookupTable[shipIDToShow].Title;
 
+			//Make sure to hide the toolbar if it was made visible, otherwise layout gets weird.
+			this.NavigationController.ToolbarHidden = true;
+
+			this.View.BackgroundColor = UIColor.Green;
+
 		}
 
 		public override void ViewWillAppear(bool animated)
@@ -74,15 +80,34 @@ namespace DANFS.iOS
 		[Export("webViewDidFinishLoad:")]
 		public void LoadingFinished(UIWebView webView)
 		{
-			if (ShipEvent != null)
-			{
-				ActiveWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').scrollIntoView()");
-				ActiveWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').style.backgroundColor = \"#00FF00\"");
+			if (webView.IsLoading) {
+				return;
 			}
-			if (LocationGuidToHighlight != null)
-			{
-				ActiveWebView.EvaluateJavascript($"document.getElementById('location-{LocationGuidToHighlight}').scrollIntoView()");
-				ActiveWebView.EvaluateJavascript($"document.getElementById('location-{LocationGuidToHighlight}').style.backgroundColor = \"#00FF00\"");
+
+			if (ActiveWebView.EvaluateJavascript("document.readyState") == "complete") {
+				// UIWebView object has fully loaded.
+
+				//Wait 2 seconds then execute this on the main loop hoping that hte layout is complete.
+				DispatchQueue.MainQueue.DispatchAfter(new DispatchTime(1000000000 * 2) , () =>
+				{
+					if (ShipEvent != null)
+					{
+						ActiveWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').style.backgroundColor = \"#00FF00\";");
+						ActiveWebView.EvaluateJavascript($"document.getElementById('date-{ShipEvent.date_guid}').scrollIntoView(true);");
+					}
+					if (LocationGuidToHighlight != null)
+					{
+						ActiveWebView.EvaluateJavascript($"document.getElementById('location-{LocationGuidToHighlight}').style.backgroundColor = \"#00FF00\";");
+						ActiveWebView.EvaluateJavascript($"document.getElementById('location-{LocationGuidToHighlight}').scrollIntoView(true);");
+
+						DispatchQueue.MainQueue.DispatchAfter(new DispatchTime(1000000000 * 2), () =>
+			   {
+				   //Offset up by a height greater than the toolbar height
+				   string scrollByDirective = "window.scrollBy(0, -60);";
+				   ActiveWebView.EvaluateJavascript(scrollByDirective);
+			   });
+					}
+				});
 			}
 		}
 	}

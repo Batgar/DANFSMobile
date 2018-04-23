@@ -8,6 +8,9 @@ namespace DANFS.Services
 		public string startdate { get; set; }
 		public string enddate { get; set; }
 		public string locationguid { get; set; }
+		public string shiplocationdatetype { get; set; }
+
+
 
 		public string OrderedDate
 		{
@@ -30,7 +33,7 @@ namespace DANFS.Services
 			}
 		}
 
-		public string shiplocationdatetype { get; set;}
+
 
 
 	}
